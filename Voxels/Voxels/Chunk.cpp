@@ -5,14 +5,17 @@
 namespace Rendering {
 	RTTI_DEFINITIONS(Chunk)
 
-	Chunk::Chunk(Game& game, Camera& camera, ID3DX11EffectPass& pass)
-		: DrawableGameComponent(game, camera), mPass(&pass)
+	Chunk::Chunk(Game& game, Camera& camera)
+		: DrawableGameComponent(game, camera)
 	{
 		mVoxels = std::vector<Voxel*>();
 	}
 
 	Chunk::~Chunk()
 	{
+		for (int i = 0; i < mVoxels.size(); i++) {
+			delete mVoxels[i];
+		}
 		mVoxels.clear();
 	}
 

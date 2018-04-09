@@ -42,7 +42,7 @@ namespace Rendering
 		// Load in the effect (shader) file and compile it
 		ID3D10Blob* compiledShader = nullptr;
 		ID3D10Blob* errorMessages = nullptr;
-		HRESULT hr = D3DCompileFromFile(L"Content\\Effects\\Effect.fx", nullptr, nullptr, nullptr, "fx_5_0", shaderFlags, 0, &compiledShader, &errorMessages);
+		HRESULT hr = D3DCompileFromFile(L"Content\\Effects\\Outline.fx", nullptr, nullptr, nullptr, "fx_5_0", shaderFlags, 0, &compiledShader, &errorMessages);
 		if (FAILED(hr))
 		{
 			const char* errorMessage = (errorMessages != nullptr ? (char*)errorMessages->GetBufferPointer() : "D3DX11CompileFromFile() failed");
@@ -102,7 +102,9 @@ namespace Rendering
 		//Define our input elements (consists of position format and colour format for this example)
 		D3D11_INPUT_ELEMENT_DESC inputElementDescriptions[] =
 		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
 		//Now can create the InputLayout to provide the mapping of vertex data from CPU to GPU
@@ -111,11 +113,21 @@ namespace Rendering
 			throw GameException("ID3D11Device::CreateInputLayout() failed.", hr);
 		}
 
-		mChunk = new Chunk(*mGame, *mCamera, *mPass);
+		mChunk = new Chunk(*mGame, *mCamera);
 
-		for (int i = 0; i < 32; i++) {
-			Voxel* voxel = new Voxel(*mGame, *mCamera, XMFLOAT3(i, 0, 0), 1, *mPass);
-			mChunk->AddVoxel(voxel);
+		float xOffset = 0.0f;
+		for (int x = 0; x < 16; x += 2) {
+			float yOffset = 0.0f;
+			for (int y = 0; y < 16; y += 2) {
+				float zOffset = 0.0f;
+				for (int z = 0; z < 16; z += 2) {
+					Voxel* voxel = new Voxel(*mGame, *mCamera, XMFLOAT3(x+xOffset, y+yOffset, z+zOffset), 1, *mTechnique);
+					mChunk->AddVoxel(voxel);
+					zOffset += 0.025f;
+				}
+				yOffset += 0.025f;
+			}
+			xOffset += 0.025f;
 		}
 	}
 

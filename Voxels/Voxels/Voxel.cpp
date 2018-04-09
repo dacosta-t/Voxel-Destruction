@@ -6,8 +6,8 @@
 namespace Rendering {
 	RTTI_DEFINITIONS(Voxel)
 
-	Voxel::Voxel(Game& game, Camera& camera, XMFLOAT3 origin, float size, ID3DX11EffectPass& pass)
-		: DrawableGameComponent(game, camera), mOrigin(origin), mSize(size), mPass(&pass)
+	Voxel::Voxel(Game& game, Camera& camera, XMFLOAT3 origin, float size, ID3DX11EffectTechnique& technique)
+		: DrawableGameComponent(game, camera), mOrigin(origin), mSize(size), mTechnique(&technique)
 	{
 		CreateVoxel();
 	}
@@ -30,47 +30,47 @@ namespace Rendering {
 
 		BasicVertex vertices[] = {
 			// Front Face
-			BasicVertex(XMFLOAT3(x.y, y.y, z.y)),
-			BasicVertex(XMFLOAT3(x.y, y.x, z.y)),
-			BasicVertex(XMFLOAT3(x.x, y.x, z.y)),
-			BasicVertex(XMFLOAT3(x.x, y.x, z.y)),
-			BasicVertex(XMFLOAT3(x.x, y.y, z.y)),
-			BasicVertex(XMFLOAT3(x.y, y.y, z.y)),
+			BasicVertex(XMFLOAT4(x.y, y.y, z.y, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f), XMFLOAT2(1, 1)),
+			BasicVertex(XMFLOAT4(x.y, y.x, z.y, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f), XMFLOAT2(1, 0)),
+			BasicVertex(XMFLOAT4(x.x, y.x, z.y, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f), XMFLOAT2(0, 0)),
+			BasicVertex(XMFLOAT4(x.x, y.x, z.y, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f), XMFLOAT2(0, 0)),
+			BasicVertex(XMFLOAT4(x.x, y.y, z.y, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f), XMFLOAT2(0, 1)),
+			BasicVertex(XMFLOAT4(x.y, y.y, z.y, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f), XMFLOAT2(1, 1)),
 			// Back Face
-			BasicVertex(XMFLOAT3(x.x, y.y, z.x)),
-			BasicVertex(XMFLOAT3(x.x, y.x, z.x)),
-			BasicVertex(XMFLOAT3(x.y, y.x, z.x)),
-			BasicVertex(XMFLOAT3(x.y, y.x, z.x)),
-			BasicVertex(XMFLOAT3(x.y, y.y, z.x)),
-			BasicVertex(XMFLOAT3(x.x, y.y, z.x)),
+			BasicVertex(XMFLOAT4(x.x, y.y, z.x, 1.0f), XMFLOAT4(0.0f, 0.0f, -1.0f, 0.0f), XMFLOAT2(0, 1)),
+			BasicVertex(XMFLOAT4(x.x, y.x, z.x, 1.0f), XMFLOAT4(0.0f, 0.0f, -1.0f, 0.0f), XMFLOAT2(0, 0)),
+			BasicVertex(XMFLOAT4(x.y, y.x, z.x, 1.0f), XMFLOAT4(0.0f, 0.0f, -1.0f, 0.0f), XMFLOAT2(1, 0)),
+			BasicVertex(XMFLOAT4(x.y, y.x, z.x, 1.0f), XMFLOAT4(0.0f, 0.0f, -1.0f, 0.0f), XMFLOAT2(1, 0)),
+			BasicVertex(XMFLOAT4(x.y, y.y, z.x, 1.0f), XMFLOAT4(0.0f, 0.0f, -1.0f, 0.0f), XMFLOAT2(1, 1)),
+			BasicVertex(XMFLOAT4(x.x, y.y, z.x, 1.0f), XMFLOAT4(0.0f, 0.0f, -1.0f, 0.0f), XMFLOAT2(0, 1)),
 			// Left Face
-			BasicVertex(XMFLOAT3(x.x, y.y, z.y)),
-			BasicVertex(XMFLOAT3(x.x, y.x, z.y)),
-			BasicVertex(XMFLOAT3(x.x, y.x, z.x)),
-			BasicVertex(XMFLOAT3(x.x, y.x, z.x)),
-			BasicVertex(XMFLOAT3(x.x, y.y, z.x)),
-			BasicVertex(XMFLOAT3(x.x, y.y, z.y)),
+			BasicVertex(XMFLOAT4(x.x, y.y, z.y, 1.0f), XMFLOAT4(-1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(1, 1)),
+			BasicVertex(XMFLOAT4(x.x, y.x, z.y, 1.0f), XMFLOAT4(-1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(0, 1)),
+			BasicVertex(XMFLOAT4(x.x, y.x, z.x, 1.0f), XMFLOAT4(-1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(0, 0)),
+			BasicVertex(XMFLOAT4(x.x, y.x, z.x, 1.0f), XMFLOAT4(-1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(0, 0)),
+			BasicVertex(XMFLOAT4(x.x, y.y, z.x, 1.0f), XMFLOAT4(-1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(1, 0)),
+			BasicVertex(XMFLOAT4(x.x, y.y, z.y, 1.0f), XMFLOAT4(-1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(1, 1)),
 			// Right Face
-			BasicVertex(XMFLOAT3(x.y, y.y, z.x)),
-			BasicVertex(XMFLOAT3(x.y, y.x, z.x)),
-			BasicVertex(XMFLOAT3(x.y, y.x, z.y)),
-			BasicVertex(XMFLOAT3(x.y, y.x, z.y)),
-			BasicVertex(XMFLOAT3(x.y, y.y, z.y)),
-			BasicVertex(XMFLOAT3(x.y, y.y, z.x)),
+			BasicVertex(XMFLOAT4(x.y, y.y, z.x, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(1, 0)),
+			BasicVertex(XMFLOAT4(x.y, y.x, z.x, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(0, 0)),
+			BasicVertex(XMFLOAT4(x.y, y.x, z.y, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(0, 1)),
+			BasicVertex(XMFLOAT4(x.y, y.x, z.y, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(0, 1)),
+			BasicVertex(XMFLOAT4(x.y, y.y, z.y, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(1, 1)),
+			BasicVertex(XMFLOAT4(x.y, y.y, z.x, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2(1, 0)),
 			// Top Face
-			BasicVertex(XMFLOAT3(x.x, y.y, z.y)),
-			BasicVertex(XMFLOAT3(x.x, y.y, z.x)),
-			BasicVertex(XMFLOAT3(x.y, y.y, z.x)),
-			BasicVertex(XMFLOAT3(x.y, y.y, z.x)),
-			BasicVertex(XMFLOAT3(x.y, y.y, z.y)),
-			BasicVertex(XMFLOAT3(x.x, y.y, z.y)),
+			BasicVertex(XMFLOAT4(x.x, y.y, z.y, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f), XMFLOAT2(0, 1)),
+			BasicVertex(XMFLOAT4(x.x, y.y, z.x, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f), XMFLOAT2(0, 0)),
+			BasicVertex(XMFLOAT4(x.y, y.y, z.x, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f), XMFLOAT2(1, 0)),
+			BasicVertex(XMFLOAT4(x.y, y.y, z.x, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f), XMFLOAT2(1, 0)),
+			BasicVertex(XMFLOAT4(x.y, y.y, z.y, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f), XMFLOAT2(1, 1)),
+			BasicVertex(XMFLOAT4(x.x, y.y, z.y, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f), XMFLOAT2(0, 1)),
 			// Bottom Face
-			BasicVertex(XMFLOAT3(x.y, y.x, z.y)),
-			BasicVertex(XMFLOAT3(x.y, y.x, z.x)),
-			BasicVertex(XMFLOAT3(x.x, y.x, z.x)),
-			BasicVertex(XMFLOAT3(x.x, y.x, z.x)),
-			BasicVertex(XMFLOAT3(x.x, y.x, z.y)),
-			BasicVertex(XMFLOAT3(x.y, y.x, z.y)),
+			BasicVertex(XMFLOAT4(x.y, y.x, z.y, 1.0f), XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f), XMFLOAT2(1, 1)),
+			BasicVertex(XMFLOAT4(x.y, y.x, z.x, 1.0f), XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f), XMFLOAT2(1, 0)),
+			BasicVertex(XMFLOAT4(x.x, y.x, z.x, 1.0f), XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f), XMFLOAT2(0, 0)),
+			BasicVertex(XMFLOAT4(x.x, y.x, z.x, 1.0f), XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f), XMFLOAT2(0, 0)),
+			BasicVertex(XMFLOAT4(x.x, y.x, z.y, 1.0f), XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f), XMFLOAT2(0, 1)),
+			BasicVertex(XMFLOAT4(x.y, y.x, z.y, 1.0f), XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f), XMFLOAT2(1, 1)),
 		};
 
 		D3D11_BUFFER_DESC vertexBufferDesc;
@@ -108,9 +108,13 @@ namespace Rendering {
 		UINT offset = 0;
 		direct3DDeviceContext->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
 
-		//Apply the pass to all the vertices and pixels
-		mPass->Apply(0, direct3DDeviceContext);
-
-		direct3DDeviceContext->Draw(36, 0);
+		for (int i = 0; i < 2; i++) {
+			//Apply the pass to all the vertices and pixels
+			ID3DX11EffectPass* pass = mTechnique->GetPassByIndex(i);
+			if (pass->IsValid()) {
+				pass->Apply(0, direct3DDeviceContext);
+				direct3DDeviceContext->Draw(36, 0);
+			}
+		}
 	}
 }

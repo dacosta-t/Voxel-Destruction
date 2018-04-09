@@ -20,16 +20,6 @@ namespace Rendering
 		virtual void Draw(const GameTime& gameTime) override;
 
 	private:
-		typedef struct _BasicVertex
-		{
-			XMFLOAT3 Position;
-
-			_BasicVertex() { }
-
-			_BasicVertex(XMFLOAT3 position)
-				: Position(position) { }
-		} BasicVertex;
-
 		VoxelDemo();
 		VoxelDemo(const VoxelDemo& rhs);
 		VoxelDemo& operator=(const VoxelDemo& rhs);

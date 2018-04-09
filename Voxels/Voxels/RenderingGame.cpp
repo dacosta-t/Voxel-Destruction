@@ -52,7 +52,7 @@ namespace Rendering
 
 		Game::Initialize();
 
-		mCamera->SetPosition(0.0f, 0.0f, 5.0f);
+		mCamera->SetPosition(8.0f, 8.0f, 50.0f);
 	}
 
 	void RenderingGame::Shutdown()
@@ -71,7 +71,6 @@ namespace Rendering
 	void RenderingGame::Update(const GameTime &gameTime)
 	{
 		mFpsComponent->Update(gameTime);
-
 		if (mKeyboard->WasKeyPressedThisFrame(DIK_ESCAPE))
 		{
 			Exit();
@@ -84,7 +83,6 @@ namespace Rendering
 	{
 		mDirect3DDeviceContext->ClearRenderTargetView(mRenderTargetView, reinterpret_cast<const float*>(&BackgroundColor));
 		mDirect3DDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		
 
 		Game::Draw(gameTime);
 
