@@ -27,6 +27,9 @@ namespace Rendering {
 
 	void Chunk::Update(const GameTime& gameTime)
 	{
+		for (auto it = mVoxels.begin(); it != mVoxels.end(); it++) {
+			(*it)->Update(gameTime);
+		}
 	}
 
 	void Chunk::Draw(const GameTime& gameTime)

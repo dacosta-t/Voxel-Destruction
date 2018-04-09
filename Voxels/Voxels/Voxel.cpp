@@ -7,12 +7,11 @@
 namespace Rendering {
 	RTTI_DEFINITIONS(Voxel)
 
-	const XMVECTOR Voxel::GRAVITY = XMLoadFloat3(new XMFLOAT3(0, -1, 0));
-
+	const float Voxel::DECAY_FACTOR = 0.98;
 
 	Voxel::Voxel(Game& game, Camera& camera, XMFLOAT3 origin, float size, ID3DX11EffectTechnique& technique)
 		: DrawableGameComponent(game, camera), mOrigin(origin), mSize(size), mTechnique(&technique)
-		, mPositionMatrix(XMLoadFloat4x4(&MatrixHelper::Identity)), mMoving(true)
+		, mPositionMatrix(XMLoadFloat4x4(&MatrixHelper::Identity)), mMoving(false)
 	{
 		CreateVoxel();
 	}
@@ -101,8 +100,10 @@ namespace Rendering {
 	void Voxel::Update(const GameTime& gameTime)
 	{
 		if (mMoving) {
-			XMMATRIX movementMatrix = XMMatrixTranslationFromVector(mVector + GRAVITY);
+			XMMATRIX movementMatrix = XMMatrixTranslationFromVector(mVector + mGravity);
 			mPositionMatrix = XMMatrixMultiply(mPositionMatrix, movementMatrix);
+			mVector = mVector * DECAY_FACTOR;
+			mGravity = mGravity / DECAY_FACTOR;
 		}
 	}
 
@@ -129,6 +130,8 @@ namespace Rendering {
 
 	void Voxel::SetMotionVector(XMVECTOR point) {
 		mVector = XMLoadFloat3(&mOrigin) - point;
+		mGravity = XMLoadFloat3(new XMFLOAT3(0.0f, -0.75f, 0.0f));
+		mMoving = true;
 	}
 
 	XMVECTOR Voxel::GetOriginVector() {

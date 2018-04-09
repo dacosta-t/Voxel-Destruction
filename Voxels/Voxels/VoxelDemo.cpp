@@ -136,6 +136,7 @@ namespace Rendering
 
 	void VoxelDemo::Update(const GameTime& gameTime)
 	{
+		mChunk->Update(gameTime);
 	}
 
 	void VoxelDemo::Draw(const GameTime& gameTime)

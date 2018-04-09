@@ -22,7 +22,8 @@ namespace Rendering {
 		virtual float GetSize();
 		virtual XMMATRIX GetPositionMatrix();
 
-		static const XMVECTOR GRAVITY;
+		static const float DECAY_FACTOR;
+
 	private:
 		typedef struct _BasicVertex
 		{
@@ -38,6 +39,7 @@ namespace Rendering {
 
 		XMFLOAT3 mOrigin;
 		XMVECTOR mVector;
+		XMVECTOR mGravity;
 		XMMATRIX mPositionMatrix;
 		float mSize;
 		ID3D11Buffer* mVertexBuffer;
