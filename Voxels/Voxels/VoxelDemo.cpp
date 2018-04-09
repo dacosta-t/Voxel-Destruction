@@ -88,8 +88,7 @@ namespace Rendering
 			throw GameException("ID3DX11Effect::GetVariableByName() could not find the specified variable.", hr);
 		}
 
-		ID3DX11EffectMatrixVariable* positionVariable = mEffect->GetVariableByName("WorldViewProjection")->AsMatrix();
-
+		ID3DX11EffectMatrixVariable* positionVariable = mEffect->GetVariableByName("PositionMatrix")->AsMatrix();
 
 		//As the variable is the WVP which is a matrix, need to have it returned (cast) as a matrix type
 		mWvpVariable = variable->AsMatrix();

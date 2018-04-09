@@ -21,6 +21,8 @@ namespace Rendering {
 		virtual XMVECTOR GetOriginVector();
 		virtual float GetSize();
 		virtual XMMATRIX GetPositionMatrix();
+
+		static const XMVECTOR GRAVITY;
 	private:
 		typedef struct _BasicVertex
 		{
@@ -40,5 +42,6 @@ namespace Rendering {
 		float mSize;
 		ID3D11Buffer* mVertexBuffer;
 		ID3DX11EffectTechnique* mTechnique;
+		bool mMoving;
 	};
 }
