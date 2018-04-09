@@ -87,6 +87,10 @@ namespace Rendering
 		{
 			throw GameException("ID3DX11Effect::GetVariableByName() could not find the specified variable.", hr);
 		}
+
+		ID3DX11EffectMatrixVariable* positionVariable = mEffect->GetVariableByName("WorldViewProjection")->AsMatrix();
+
+
 		//As the variable is the WVP which is a matrix, need to have it returned (cast) as a matrix type
 		mWvpVariable = variable->AsMatrix();
 		if (mWvpVariable->IsValid() == false)
@@ -113,7 +117,7 @@ namespace Rendering
 			throw GameException("ID3D11Device::CreateInputLayout() failed.", hr);
 		}
 
-		mChunk = new Chunk(*mGame, *mCamera);
+		mChunk = new Chunk(*mGame, *mCamera, *positionVariable);
 
 		float xOffset = 0.0f;
 		for (int x = 0; x < 16; x += 2) {
@@ -149,5 +153,34 @@ namespace Rendering
 		mWvpVariable->SetMatrix(reinterpret_cast<const float*>(&wvp));
 
 		mChunk->Draw(gameTime);
+	}
+
+	void VoxelDemo::SetMotionVectors(long x, long y) {
+		XMFLOAT4X4 proj;
+		XMStoreFloat4x4(&proj, mCamera->ProjectionMatrix());
+		float dx = (((2.0f * x) / mGame->ScreenWidth()) - 1.0f) / proj(0, 0);
+		float dy = (((-2.0f * y) / mGame->ScreenHeight()) + 1.0f) / proj(1, 1);
+
+		XMVECTOR orig = XMLoadFloat3(new XMFLOAT3(0.0f, 0.0f, 0.0f));
+		XMVECTOR dir = XMLoadFloat3(new XMFLOAT3(dx, dy, -1.0f));
+		XMMATRIX invView = XMMatrixInverse(nullptr, mCamera->ViewMatrix());
+		orig = XMVector3TransformCoord(orig, invView);
+		dir = XMVector3TransformNormal(dir, invView);
+		XMVector3Normalize(dir);
+
+		float dist = mChunk->FindClosestVoxel(orig, dir);
+		if (dist >= 0) {
+			dir = dir * dist;
+			XMVECTOR impact = orig + dir;
+			mChunk->SetMotionVectors(impact);
+		}
+
+		//long dx = (x / (mGame->ScreenWidth() * 0.5f - 1.0f)) / mGame->AspectRatio();
+		//long dy = 1.0f - y / (mGame->ScreenHeight() * 0.5f);
+		//XMVECTOR v = XMLoadFloat3(new XMFLOAT3(dx, dy, 0.0f));
+		
+		//v = XMVector3Unproject(v, 0, 0, mGame->ScreenWidth(), mGame->ScreenHeight(), 0, 1.0f, mCamera->ProjectionMatrix(), mCamera->ViewMatrix(), XMLoadFloat4x4(&mWorldMatrix));
+
+		//mChunk->SetMotionVectors(v);
 	}
 }

@@ -76,6 +76,14 @@ namespace Rendering
 			Exit();
 		}
 
+		if (mMouse->WasButtonDown(MouseButtons::MouseButtonsRight)) {
+			//XMVECTOR v = XMLoadFloat3(new XMFLOAT3(mMouse->X(), mMouse->Y(), 0));
+
+			//v = XMVector3Unproject(v, 0, 0, 1024, 768, 0, 1, mCamera->ProjectionMatrix(), mCamera->ViewMatrix(), )
+
+			mDemo->SetMotionVectors(mMouse->X(), mMouse->Y());
+		}
+
 		Game::Update(gameTime);
 	}
 

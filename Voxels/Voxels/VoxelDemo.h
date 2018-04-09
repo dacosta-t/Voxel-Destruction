@@ -18,6 +18,7 @@ namespace Rendering
 		virtual void Initialize() override;
 		virtual void Update(const GameTime& gameTime) override;
 		virtual void Draw(const GameTime& gameTime) override;
+		virtual void SetMotionVectors(long x, long y);
 
 	private:
 		VoxelDemo();

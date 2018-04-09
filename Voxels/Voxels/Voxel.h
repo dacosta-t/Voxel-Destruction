@@ -16,6 +16,11 @@ namespace Rendering {
 		void CreateVoxel();
 		virtual void Update(const GameTime& gameTime) override;
 		virtual void Draw(const GameTime& gameTime) override;
+		virtual void SetMotionVector(XMVECTOR point);
+
+		virtual XMVECTOR GetOriginVector();
+		virtual float GetSize();
+		virtual XMMATRIX GetPositionMatrix();
 	private:
 		typedef struct _BasicVertex
 		{
@@ -30,6 +35,8 @@ namespace Rendering {
 		} BasicVertex;
 
 		XMFLOAT3 mOrigin;
+		XMVECTOR mVector;
+		XMMATRIX mPositionMatrix;
 		float mSize;
 		ID3D11Buffer* mVertexBuffer;
 		ID3DX11EffectTechnique* mTechnique;

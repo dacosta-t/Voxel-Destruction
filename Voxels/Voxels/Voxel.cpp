@@ -2,12 +2,14 @@
 #include "Game.h"
 #include "GameException.h"
 #include "Camera.h"
+#include "MatrixHelper.h"
 
 namespace Rendering {
 	RTTI_DEFINITIONS(Voxel)
 
 	Voxel::Voxel(Game& game, Camera& camera, XMFLOAT3 origin, float size, ID3DX11EffectTechnique& technique)
 		: DrawableGameComponent(game, camera), mOrigin(origin), mSize(size), mTechnique(&technique)
+		, mPositionMatrix(XMLoadFloat4x4(&MatrixHelper::Identity))
 	{
 		CreateVoxel();
 	}
@@ -116,5 +118,21 @@ namespace Rendering {
 				direct3DDeviceContext->Draw(36, 0);
 			}
 		}
+	}
+
+	void Voxel::SetMotionVector(XMVECTOR point) {
+		mVector = XMLoadFloat3(&mOrigin) - point;
+	}
+
+	XMVECTOR Voxel::GetOriginVector() {
+		return XMLoadFloat3(&mOrigin);
+	}
+
+	float Voxel::GetSize() {
+		return mSize;
+	}
+
+	XMMATRIX Voxel::GetPositionMatrix() {
+		return mPositionMatrix;
 	}
 }

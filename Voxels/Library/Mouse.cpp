@@ -92,9 +92,13 @@ namespace Library
                 }
             }
 
+			POINT p;
+			GetCursorPos(&p);
+			ScreenToClient(mGame->WindowHandle(), &p);
+
             // Accumulate positions
-            mX += mCurrentState.lX;
-            mY += mCurrentState.lY;
+			mX = p.x;
+			mY = p.y;
             mWheel += mCurrentState.lZ;
         }
     }

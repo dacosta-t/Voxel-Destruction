@@ -2,6 +2,7 @@
 
 #include "Common.h"
 #include "Game.h"
+#include "Mouse.h"
 
 using namespace Library;
 
