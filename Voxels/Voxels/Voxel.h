@@ -23,6 +23,8 @@ namespace Rendering {
 		virtual XMMATRIX GetPositionMatrix();
 
 		static const float DECAY_FACTOR;
+		static const float TIME_FACTOR;
+		static const float SCALE_FACTOR;
 
 	private:
 		typedef struct _BasicVertex
@@ -36,6 +38,8 @@ namespace Rendering {
 			_BasicVertex(XMFLOAT4 position, XMFLOAT4 normal, XMFLOAT2 texture)
 				: Position(position), Normal(normal), Texture(texture) { }
 		} BasicVertex;
+
+		double GetRandomDisplacement();
 
 		XMFLOAT3 mOrigin;
 		XMVECTOR mVector;

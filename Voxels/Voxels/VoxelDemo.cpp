@@ -124,7 +124,8 @@ namespace Rendering
 			for (int y = 0; y < 16; y += 2) {
 				float zOffset = 0.0f;
 				for (int z = 0; z < 16; z += 2) {
-					Voxel* voxel = new Voxel(*mGame, *mCamera, XMFLOAT3(x+xOffset, y+yOffset, z+zOffset), 1, *mTechnique);
+					//Voxel* voxel = new Voxel(*mGame, *mCamera, XMFLOAT3(x+xOffset, y+yOffset, z+zOffset), 1, *mTechnique);
+					Voxel* voxel = new Voxel(*mGame, *mCamera, XMFLOAT3(x, y, z), 1, *mTechnique);
 					mChunk->AddVoxel(voxel);
 					zOffset += 0.025f;
 				}

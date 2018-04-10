@@ -8,6 +8,8 @@ namespace Rendering {
 	RTTI_DEFINITIONS(Voxel)
 
 	const float Voxel::DECAY_FACTOR = 0.98;
+	const float Voxel::TIME_FACTOR = 10;
+	const float Voxel::SCALE_FACTOR = 0.3;
 
 	Voxel::Voxel(Game& game, Camera& camera, XMFLOAT3 origin, float size, ID3DX11EffectTechnique& technique)
 		: DrawableGameComponent(game, camera), mOrigin(origin), mSize(size), mTechnique(&technique)
@@ -100,10 +102,12 @@ namespace Rendering {
 	void Voxel::Update(const GameTime& gameTime)
 	{
 		if (mMoving) {
-			XMMATRIX movementMatrix = XMMatrixTranslationFromVector(mVector + mGravity);
+			double time = gameTime.ElapsedGameTime() * TIME_FACTOR;
+			XMMATRIX movementMatrix = XMMatrixTranslationFromVector((mVector * time) + (mGravity * time));
 			mPositionMatrix = XMMatrixMultiply(mPositionMatrix, movementMatrix);
-			mVector = mVector * DECAY_FACTOR;
-			mGravity = mGravity / DECAY_FACTOR;
+			//double rand = (((std::rand() % 1000) / 50000.0f) - 0.01) * 3;
+			mVector = mVector * (DECAY_FACTOR);
+			mGravity = mGravity / (DECAY_FACTOR);
 		}
 	}
 
@@ -118,7 +122,7 @@ namespace Rendering {
 		UINT offset = 0;
 		direct3DDeviceContext->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
 
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 1; i++) {
 			//Apply the pass to all the vertices and pixels
 			ID3DX11EffectPass* pass = mTechnique->GetPassByIndex(i);
 			if (pass->IsValid()) {
@@ -129,9 +133,20 @@ namespace Rendering {
 	}
 
 	void Voxel::SetMotionVector(XMVECTOR point) {
-		mVector = XMLoadFloat3(&mOrigin) - point;
+		XMFLOAT3 pFloat;
+		XMStoreFloat3(&pFloat, point);
+		XMFLOAT3 adj;
+		adj.x = (mOrigin.x - pFloat.x + GetRandomDisplacement()) * SCALE_FACTOR;
+		adj.y = (mOrigin.y - pFloat.y + GetRandomDisplacement()) * SCALE_FACTOR;
+		adj.z = (mOrigin.z - pFloat.z + GetRandomDisplacement()) * SCALE_FACTOR;
+		mVector = XMLoadFloat3(&adj);
+		//mVector = XMLoadFloat3(&mOrigin) - point;
 		mGravity = XMLoadFloat3(new XMFLOAT3(0.0f, -0.75f, 0.0f));
 		mMoving = true;
+	}
+
+	double Voxel::GetRandomDisplacement() {
+		return (((std::rand() % 1000) / 5000.0f) - 0.1) * 10;
 	}
 
 	XMVECTOR Voxel::GetOriginVector() {
