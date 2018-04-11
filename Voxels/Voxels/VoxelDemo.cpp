@@ -144,7 +144,6 @@ namespace Rendering
 	{
 		ID3DX11EffectMatrixVariable* positionVariable = mEffect->GetVariableByName("PositionMatrix")->AsMatrix();
 		mChunk = new Chunk(*mGame, *mCamera, *positionVariable);
-
 		float numCubes = 32;
 		for (int x = 0; x < numCubes; x += 2) {
 			for (int y = 0; y < numCubes; y += 2) {
@@ -176,7 +175,7 @@ namespace Rendering
 		XMMATRIX invView = XMMatrixInverse(nullptr, mCamera->ViewMatrix());
 		orig = XMVector3TransformCoord(orig, invView);
 		dir = XMVector3TransformNormal(dir, invView);
-		XMVector3Normalize(dir);
+		dir = XMVector3Normalize(dir);
 
 		float dist = mChunk->FindClosestVoxel(orig, dir);
 		if (dist >= 0) {

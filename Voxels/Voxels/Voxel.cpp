@@ -139,8 +139,8 @@ namespace Rendering {
 			ID3DX11EffectPass* pass = mTechnique->GetPassByIndex(i);
 			if (pass->IsValid()) {
 				pass->Apply(0, direct3DDeviceContext);
-				direct3DDeviceContext->Draw(36, 0);
 			}
+			direct3DDeviceContext->Draw(36, 0);
 		}
 	}
 
@@ -152,15 +152,18 @@ namespace Rendering {
 		adj.x = (mOrigin.x - pFloat.x + GetRandomDisplacement()) * SCALE_FACTOR;
 		adj.y = (mOrigin.y - pFloat.y + GetRandomDisplacement()) * SCALE_FACTOR;
 		adj.z = (mOrigin.z - pFloat.z + GetRandomDisplacement()) * SCALE_FACTOR;
-		mVector = XMLoadFloat3(&adj);
-		XMFLOAT3 gravityFloat = XMFLOAT3(0.0f, -9.81f, 0.0f);
-		mGravity = XMLoadFloat3(&gravityFloat);
-		mMoving = true;
+		float length = sqrt(adj.x * adj.x + adj.y * adj.y + adj.z * adj.z);
+		if (length < 5.0f) {
+			mVector = XMLoadFloat3(&adj);
+			XMFLOAT3 gravityFloat = XMFLOAT3(0.0f, -9.81f, 0.0f);
+			mGravity = XMLoadFloat3(&gravityFloat);
+			mMoving = true;
+		}
 	}
 
 	double Voxel::GetRandomDisplacement()
 	{
-		return (((std::rand() % 1000) / 5000.0f) - 0.1) * 500;
+		return (((std::rand() % 1000) / 5000.0f) - 0.1) * 50;
 	}
 
 	XMVECTOR Voxel::GetOriginVector()
