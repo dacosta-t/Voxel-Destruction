@@ -15,7 +15,7 @@ namespace Rendering {
 	Chunk::~Chunk()
 	{
 		for (int i = 0; i < mVoxels.size(); i++) {
-			delete mVoxels[i];
+			DeleteObject(mVoxels[i]);
 		}
 		mVoxels.clear();
 	}

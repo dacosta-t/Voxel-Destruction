@@ -140,8 +140,8 @@ namespace Rendering {
 		adj.y = (mOrigin.y - pFloat.y + GetRandomDisplacement()) * SCALE_FACTOR;
 		adj.z = (mOrigin.z - pFloat.z + GetRandomDisplacement()) * SCALE_FACTOR;
 		mVector = XMLoadFloat3(&adj);
-		//mVector = XMLoadFloat3(&mOrigin) - point;
-		mGravity = XMLoadFloat3(new XMFLOAT3(0.0f, -0.75f, 0.0f));
+		XMFLOAT3 gravityFloat = XMFLOAT3(0.0f, -0.75f, 0.0f);
+		mGravity = XMLoadFloat3(&gravityFloat);
 		mMoving = true;
 	}
 

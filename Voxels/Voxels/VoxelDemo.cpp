@@ -116,23 +116,7 @@ namespace Rendering
 			throw GameException("ID3D11Device::CreateInputLayout() failed.", hr);
 		}
 
-		mChunk = new Chunk(*mGame, *mCamera, *positionVariable);
-
-		float xOffset = 0.0f;
-		for (int x = 0; x < 16; x += 2) {
-			float yOffset = 0.0f;
-			for (int y = 0; y < 16; y += 2) {
-				float zOffset = 0.0f;
-				for (int z = 0; z < 16; z += 2) {
-					//Voxel* voxel = new Voxel(*mGame, *mCamera, XMFLOAT3(x+xOffset, y+yOffset, z+zOffset), 1, *mTechnique);
-					Voxel* voxel = new Voxel(*mGame, *mCamera, XMFLOAT3(x, y, z), 1, *mTechnique);
-					mChunk->AddVoxel(voxel);
-					zOffset += 0.025f;
-				}
-				yOffset += 0.025f;
-			}
-			xOffset += 0.025f;
-		}
+		CreateChunk();
 	}
 
 	void VoxelDemo::Update(const GameTime& gameTime)
@@ -156,14 +140,41 @@ namespace Rendering
 		mChunk->Draw(gameTime);
 	}
 
+	void VoxelDemo::CreateChunk()
+	{
+		ID3DX11EffectMatrixVariable* positionVariable = mEffect->GetVariableByName("PositionMatrix")->AsMatrix();
+
+		mChunk = new Chunk(*mGame, *mCamera, *positionVariable);
+
+		for (int x = 0; x < 16; x += 2) {
+			float yOffset = 0.0f;
+			for (int y = 0; y < 16; y += 2) {
+				float zOffset = 0.0f;
+				for (int z = 0; z < 16; z += 2) {
+					Voxel* voxel = new Voxel(*mGame, *mCamera, XMFLOAT3(x, y, z), 1, *mTechnique);
+					mChunk->AddVoxel(voxel);
+				}
+			}
+		}
+	}
+
+	void VoxelDemo::Reset()
+	{
+		DeleteObject(mChunk);
+		CreateChunk();
+	}
+
 	void VoxelDemo::SetMotionVectors(long x, long y) {
 		XMFLOAT4X4 proj;
 		XMStoreFloat4x4(&proj, mCamera->ProjectionMatrix());
 		float dx = (((2.0f * x) / mGame->ScreenWidth()) - 1.0f) / proj(0, 0);
 		float dy = (((-2.0f * y) / mGame->ScreenHeight()) + 1.0f) / proj(1, 1);
 
-		XMVECTOR orig = XMLoadFloat3(new XMFLOAT3(0.0f, 0.0f, 0.0f));
-		XMVECTOR dir = XMLoadFloat3(new XMFLOAT3(dx, dy, -1.0f));
+		XMFLOAT3 origFloat = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		XMVECTOR orig = XMLoadFloat3(&origFloat);
+
+		XMFLOAT3 dirFloat = XMFLOAT3(dx, dy, -1.0f);
+		XMVECTOR dir = XMLoadFloat3(&dirFloat);
 		XMMATRIX invView = XMMatrixInverse(nullptr, mCamera->ViewMatrix());
 		orig = XMVector3TransformCoord(orig, invView);
 		dir = XMVector3TransformNormal(dir, invView);
@@ -175,13 +186,5 @@ namespace Rendering
 			XMVECTOR impact = orig + dir;
 			mChunk->SetMotionVectors(impact);
 		}
-
-		//long dx = (x / (mGame->ScreenWidth() * 0.5f - 1.0f)) / mGame->AspectRatio();
-		//long dy = 1.0f - y / (mGame->ScreenHeight() * 0.5f);
-		//XMVECTOR v = XMLoadFloat3(new XMFLOAT3(dx, dy, 0.0f));
-		
-		//v = XMVector3Unproject(v, 0, 0, mGame->ScreenWidth(), mGame->ScreenHeight(), 0, 1.0f, mCamera->ProjectionMatrix(), mCamera->ViewMatrix(), XMLoadFloat4x4(&mWorldMatrix));
-
-		//mChunk->SetMotionVectors(v);
 	}
 }

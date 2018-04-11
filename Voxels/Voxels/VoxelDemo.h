@@ -20,6 +20,9 @@ namespace Rendering
 		virtual void Draw(const GameTime& gameTime) override;
 		virtual void SetMotionVectors(long x, long y);
 
+		void CreateChunk();
+		void Reset();
+
 	private:
 		VoxelDemo();
 		VoxelDemo(const VoxelDemo& rhs);
