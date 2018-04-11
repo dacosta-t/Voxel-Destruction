@@ -52,7 +52,7 @@ namespace Rendering
 
 		Game::Initialize();
 
-		mCamera->SetPosition(8.0f, 8.0f, 50.0f);
+		mCamera->SetPosition(8.0f, 8.0f, 200.0f);
 	}
 
 	void RenderingGame::Shutdown()

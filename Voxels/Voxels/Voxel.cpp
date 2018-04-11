@@ -7,9 +7,9 @@
 namespace Rendering {
 	RTTI_DEFINITIONS(Voxel)
 
-	const float Voxel::DECAY_FACTOR = 0.98;
-	const float Voxel::TIME_FACTOR = 10;
-	const float Voxel::SCALE_FACTOR = 0.3;
+	const float Voxel::DECAY_FACTOR = 0.98f;
+	const float Voxel::TIME_FACTOR = 5.0f;
+	const float Voxel::SCALE_FACTOR = 0.5f;
 
 	Voxel::Voxel(Game& game, Camera& camera, XMFLOAT3 origin, float size, ID3DX11EffectTechnique& technique)
 		: DrawableGameComponent(game, camera), mOrigin(origin), mSize(size), mTechnique(&technique)
@@ -103,9 +103,21 @@ namespace Rendering {
 	{
 		if (mMoving) {
 			double time = gameTime.ElapsedGameTime() * TIME_FACTOR;
-			XMMATRIX movementMatrix = XMMatrixTranslationFromVector((mVector * time) + (mGravity * time));
+			mPositionMatrix = XMMatrixMultiply(mPositionMatrix, XMMatrixTranslation(-mOrigin.x, -mOrigin.y, -mOrigin.z));
+			mPositionMatrix = XMMatrixMultiply(mPositionMatrix, XMMatrixRotationX(mRotationAngle.x));
+			mPositionMatrix = XMMatrixMultiply(mPositionMatrix, XMMatrixRotationY(mRotationAngle.y));
+			mPositionMatrix = XMMatrixMultiply(mPositionMatrix, XMMatrixRotationZ(mRotationAngle.z));
+			mPositionMatrix = XMMatrixMultiply(mPositionMatrix, XMMatrixTranslation(mOrigin.x, mOrigin.y, mOrigin.z));
+
+			float rotFalloff = pow(DECAY_FACTOR, 3);
+			mRotationAngle = XMFLOAT3(mRotationAngle.x * rotFalloff, mRotationAngle.y * rotFalloff, mRotationAngle.z * rotFalloff);
+
+			XMVECTOR v = (mVector * time) + (mGravity * time);
+			XMFLOAT3 newOrigin;
+			XMStoreFloat3(&newOrigin, v);
+			mOrigin = XMFLOAT3(mOrigin.x + newOrigin.x, mOrigin.y + newOrigin.y, mOrigin.z + newOrigin.z);
+			XMMATRIX movementMatrix = XMMatrixTranslationFromVector(v);
 			mPositionMatrix = XMMatrixMultiply(mPositionMatrix, movementMatrix);
-			//double rand = (((std::rand() % 1000) / 50000.0f) - 0.01) * 3;
 			mVector = mVector * (DECAY_FACTOR);
 			mGravity = mGravity / (DECAY_FACTOR);
 		}
@@ -132,7 +144,8 @@ namespace Rendering {
 		}
 	}
 
-	void Voxel::SetMotionVector(XMVECTOR point) {
+	void Voxel::SetMotionVector(XMVECTOR point)
+	{
 		XMFLOAT3 pFloat;
 		XMStoreFloat3(&pFloat, point);
 		XMFLOAT3 adj;
@@ -140,24 +153,36 @@ namespace Rendering {
 		adj.y = (mOrigin.y - pFloat.y + GetRandomDisplacement()) * SCALE_FACTOR;
 		adj.z = (mOrigin.z - pFloat.z + GetRandomDisplacement()) * SCALE_FACTOR;
 		mVector = XMLoadFloat3(&adj);
-		XMFLOAT3 gravityFloat = XMFLOAT3(0.0f, -0.75f, 0.0f);
+		XMFLOAT3 gravityFloat = XMFLOAT3(0.0f, -9.81f, 0.0f);
 		mGravity = XMLoadFloat3(&gravityFloat);
 		mMoving = true;
 	}
 
-	double Voxel::GetRandomDisplacement() {
-		return (((std::rand() % 1000) / 5000.0f) - 0.1) * 10;
+	double Voxel::GetRandomDisplacement()
+	{
+		return (((std::rand() % 1000) / 5000.0f) - 0.1) * 500;
 	}
 
-	XMVECTOR Voxel::GetOriginVector() {
+	XMVECTOR Voxel::GetOriginVector()
+	{
 		return XMLoadFloat3(&mOrigin);
 	}
 
-	float Voxel::GetSize() {
+	float Voxel::GetSize()
+	{
 		return mSize;
 	}
 
-	XMMATRIX Voxel::GetPositionMatrix() {
+	XMMATRIX Voxel::GetPositionMatrix()
+	{
 		return mPositionMatrix;
+	}
+
+	void Voxel::SetRotation()
+	{
+		float x = (std::rand() % 61) / 2.0f - 30.0f;
+		float y = (std::rand() % 61) / 2.0f - 30.0f;
+		float z = (std::rand() % 61) / 2.0f - 30.0f;
+		mRotationAngle = XMFLOAT3(x, y, z);
 	}
 }

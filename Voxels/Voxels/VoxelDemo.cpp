@@ -143,14 +143,12 @@ namespace Rendering
 	void VoxelDemo::CreateChunk()
 	{
 		ID3DX11EffectMatrixVariable* positionVariable = mEffect->GetVariableByName("PositionMatrix")->AsMatrix();
-
 		mChunk = new Chunk(*mGame, *mCamera, *positionVariable);
 
-		for (int x = 0; x < 16; x += 2) {
-			float yOffset = 0.0f;
-			for (int y = 0; y < 16; y += 2) {
-				float zOffset = 0.0f;
-				for (int z = 0; z < 16; z += 2) {
+		float numCubes = 32;
+		for (int x = 0; x < numCubes; x += 2) {
+			for (int y = 0; y < numCubes; y += 2) {
+				for (int z = 0; z < numCubes; z += 2) {
 					Voxel* voxel = new Voxel(*mGame, *mCamera, XMFLOAT3(x, y, z), 1, *mTechnique);
 					mChunk->AddVoxel(voxel);
 				}

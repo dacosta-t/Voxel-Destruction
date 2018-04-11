@@ -42,6 +42,7 @@ namespace Rendering {
 
 	void Chunk::SetMotionVectors(XMVECTOR point) {
 		for (auto it = mVoxels.begin(); it != mVoxels.end(); it++) {
+			(*it)->SetRotation();
 			(*it)->SetMotionVector(point);
 		}
 	}

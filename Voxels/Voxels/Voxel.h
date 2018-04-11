@@ -21,6 +21,7 @@ namespace Rendering {
 		virtual XMVECTOR GetOriginVector();
 		virtual float GetSize();
 		virtual XMMATRIX GetPositionMatrix();
+		virtual void SetRotation();
 
 		static const float DECAY_FACTOR;
 		static const float TIME_FACTOR;
@@ -49,5 +50,6 @@ namespace Rendering {
 		ID3D11Buffer* mVertexBuffer;
 		ID3DX11EffectTechnique* mTechnique;
 		bool mMoving;
+		XMFLOAT3 mRotationAngle;
 	};
 }
